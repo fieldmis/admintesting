@@ -892,7 +892,7 @@ function App() {
     const [saving, setSaving] = useState(false);
     const [online, setOnline] = useState(() => navigator.onLine);
     const [dir, setDir] = useState(0); // tab transition direction: 1 = forward, -1 = backward
-    const [booted, setBooted] = useState(false); // becomes true after the first successful/failed sync
+    const [booted, setBooted] = useState(true); // render the app shell immediately; data loads into skeletons without a boot-screen flash
     const hasBootedRef = useRef(false);
     const live = !!apiUrl && online;
     const clearToast = useCallback(() => setToast(null), []);
