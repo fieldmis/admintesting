@@ -35,7 +35,10 @@
   /* Accessibility and mobile interaction refinements */
   :root { color-scheme: dark; }
   html { background: #0F0909; }
-  body { background: #0F0909; }
+  body { background: #0F0909; min-height: 100dvh; overscroll-behavior-y: contain; }
+  button { touch-action: manipulation; }
+  .glass-card { will-change: transform; transform: translateZ(0); }
+  @media (hover:hover) and (pointer:fine) { .glass-card { transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease; } .glass-card:hover { transform: translateY(-1px); } }
   button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
   button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
     outline: 2px solid #FBCE07;
@@ -354,13 +357,22 @@ function useApi() {
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action, payload: payload || {} }),
                     signal: controller.signal,
+                    cache: 'no-store',
                 });
                 const text = await res.text();
-                try { return JSON.parse(text); }
+                if (!res.ok) {
+                    return { ok: false, message: `Backend request failed (HTTP ${res.status}). Check the Apps Script deployment and permissions.`, httpStatus: res.status };
+                }
+                try {
+                    const json = JSON.parse(text);
+                    return json && typeof json === 'object'
+                        ? json
+                        : { ok: false, message: 'Backend returned an unexpected response.' };
+                }
                 catch (parseErr) {
-                    // Apps Script returns an HTML page (not JSON) when the deployment
-                    // is outdated, not shared with the right audience, or the script crashed.
-                    return { ok: false, message: 'Backend sent an invalid response (HTTP ' + res.status + '). Re-deploy the Apps Script web app as a NEW VERSION and check it is shared with "Anyone".' };
+                    // Apps Script returns HTML when the deployment is outdated,
+                    // inaccessible, or the script crashed before returning JSON.
+                    return { ok: false, message: 'Backend returned an invalid response (HTTP ' + res.status + '). Re-deploy the Apps Script web app as a NEW VERSION and check it is shared with "Anyone".' };
                 }
             } finally {
                 clearTimeout(timeoutId);
@@ -423,7 +435,7 @@ function BottomNav({ active, onChange }) {
     return (_jsx("nav", { className: "fixed bottom-0 left-0 right-0 z-30 bg-canvas/90 backdrop-blur-xl border-t border-[#8CAAC8]/15", style: { paddingBottom: 'env(safe-area-inset-bottom, 0px)' }, children: _jsx("div", { className: "max-w-2xl mx-auto px-2 flex items-stretch", children: TABS.map(tab => {
                 const Icon = tab.icon;
                 const isActive = active === tab.key;
-                return (_jsxs("button", { onClick: () => onChange(tab.key), className: "relative flex-1 flex flex-col items-center justify-center gap-1 py-2.5", children: [false, _jsx(Icon, { size: 19, className: isActive ? 'text-cyan' : 'text-[#4A5A70]', strokeWidth: isActive ? 2.4 : 2 }), _jsx("span", { className: `text-[9px] font-display font-semibold tracking-wider ${isActive ? 'text-cyan' : 'text-[#4A5A70]'}`, children: tab.label })] }, tab.key));
+                return (_jsxs("button", { onClick: () => onChange(tab.key), className: "relative flex-1 flex flex-col items-center justify-center gap-1 py-2.5 min-h-[56px]", "aria-current": isActive ? "page" : undefined, "aria-label": tab.label, children: [_jsx(Icon, { size: 19, className: isActive ? 'text-cyan' : 'text-[#4A5A70]', strokeWidth: isActive ? 2.4 : 2 }), _jsx("span", { className: `text-[9px] font-display font-semibold tracking-wider ${isActive ? 'text-cyan' : 'text-[#4A5A70]'}`, children: tab.label })] }, tab.key));
             }) }) }));
 }
 /* ============================================================
@@ -837,16 +849,29 @@ function App() {
     const [beatPlanData, setBeatPlanData] = useState([]);
     const [loading, setLoading] = useState({ hours: true, visits: true, summary: true, attendance: true, beatplan: true });
     const [saving, setSaving] = useState(false);
+    const [online, setOnline] = useState(() => navigator.onLine);
     const [dir, setDir] = useState(0); // tab transition direction: 1 = forward, -1 = backward
     const [booted, setBooted] = useState(false); // becomes true after the first successful/failed sync
     const hasBootedRef = useRef(false);
-    const live = !!apiUrl;
+    const live = !!apiUrl && online;
     const clearToast = useCallback(() => setToast(null), []);
+    useEffect(() => {
+        const onOnline = () => setOnline(true);
+        const onOffline = () => setOnline(false);
+        window.addEventListener('online', onOnline);
+        window.addEventListener('offline', onOffline);
+        return () => { window.removeEventListener('online', onOnline); window.removeEventListener('offline', onOffline); };
+    }, []);
     const [ptr, setPtr] = useState('idle'); // pull-to-refresh state: idle | pull | ready
     const [ptrBusy, setPtrBusy] = useState(false);
     const inFlightRef = useRef(false);
     const loadAll = useCallback(async () => {
-        if (inFlightRef.current) return; // ignore overlapping refreshes
+        if (inFlightRef.current) return;
+        if (!navigator.onLine) {
+            setToast({ message: 'You are offline. Showing the last loaded data.', tone: 'coral' });
+            if (!hasBootedRef.current) { hasBootedRef.current = true; setBooted(true); }
+            return;
+        } // ignore overlapping refreshes
         inFlightRef.current = true;
         setRefreshing(true);
         // Skeletons only show on the very first load (loading starts as true).
@@ -877,13 +902,18 @@ function App() {
             }
         }
         catch (e) {
-            setToast({ message: 'Sync failed — check connection settings.', tone: 'coral' });
+            const message = e && e.name === 'AbortError'
+                ? 'Sync timed out. The server may be busy — try again in a moment.'
+                : !navigator.onLine
+                    ? 'You are offline. Showing the last loaded data.'
+                    : 'Sync failed — check connection settings.';
+            setToast({ message, tone: 'coral' });
         }
         finally {
             inFlightRef.current = false;
             setLoading(prev => (prev.hours || prev.visits || prev.summary || prev.attendance || prev.beatplan)
                 ? { hours: false, visits: false, summary: false, attendance: false, beatplan: false } : prev);
-            setTimeout(() => setRefreshing(false), 600);
+            setRefreshing(false);
             if (!hasBootedRef.current) {
                 hasBootedRef.current = true;
                 setBooted(true);
@@ -892,6 +922,7 @@ function App() {
     }, [callApi]);
     useEffect(() => { loadAll(); }, [loadAll]);
     const handleSaveAttendance = async (records) => {
+        if (saving || !records || records.length === 0) return;
         setSaving(true);
         try {
             const res = await callApi('submitAdminAttendance', { records });
@@ -913,7 +944,7 @@ function App() {
             }
         }
         catch (e) {
-            setToast({ message: 'Save failed — network error.', tone: 'coral' });
+            setToast({ message: e && e.name === 'AbortError' ? 'Save timed out — please try again.' : 'Save failed — network error.', tone: 'coral' });
         }
         finally {
             setSaving(false);
