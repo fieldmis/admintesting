@@ -4,12 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>FIELD OPS — ADMIN</title>
-<meta name="theme-color" content="#0F0909" />
+<meta name="theme-color" content="#F1EEEA" />
 
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="FOS Admin">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,12 +33,10 @@
 
 <style>
   /* Accessibility and mobile interaction refinements */
-  :root { color-scheme: dark; }
-  html { background: #0F0909; }
-  body { background: #0F0909; min-height: 100dvh; overscroll-behavior-y: contain; }
+  :root { color-scheme: light; }
+  html { background: #F1EEEA; }
+  body { min-height: 100vh; min-height: 100dvh; overscroll-behavior-y: contain; }
   button { touch-action: manipulation; }
-  .glass-card { will-change: transform; transform: translateZ(0); }
-  @media (hover:hover) and (pointer:fine) { .glass-card { transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease; } .glass-card:hover { transform: translateY(-1px); } }
   button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
   button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
     outline: 2px solid #FBCE07;
@@ -53,15 +51,12 @@
       scroll-behavior: auto !important;
     }
   }
-  @media (min-width: 768px) {
-    body { background: #0F0909; }
-  }
 </style>
 
 <style>
   html, body { background: #F1EEEA; }
-  #root { min-height: 100vh; }
-  .min-h-screen { min-height: 100vh; }
+  #root { min-height: 100vh; min-height: 100dvh; }
+  .min-h-screen { min-height: 100vh; min-height: 100dvh; }
   body { -webkit-tap-highlight-color: transparent; }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-thumb { border-radius: 4px; }
@@ -78,14 +73,14 @@
   html, body { color:#120E0B; -webkit-font-smoothing:antialiased; }
   body, body.bg-canvas { background:transparent !important; }
   #root { position:relative; z-index:0; }
-  #bg-logo { position:fixed; top:0; left:0; right:0; height:100vh; z-index:-1; pointer-events:none; contain:layout paint style;
+  #bg-logo { position:fixed; top:0; left:0; right:0; height:100vh; height:100lvh; z-index:-1; pointer-events:none; contain:layout paint style;
     background:linear-gradient(160deg,#F8F6F3 0%,#F0ECE7 55%,#E9E4DE 100%); }
   #bg-logo::before { content:""; position:absolute; left:50%; top:46%;
     width:min(123vw,704px); aspect-ratio:1/1; transform:translate(-50%,-50%);
     background:url(data:image/webp;base64,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) center/contain no-repeat; opacity:.55; }
   .bg-hud-radial { background-image:none; }
   .backdrop-blur, .backdrop-blur-md, .backdrop-blur-xl { -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
-  *, *::before, *::after { transition:none !important; }
+  .glass-card, button, input, select, textarea { transition: box-shadow .14s ease, background-color .14s ease, color .14s ease, border-color .14s ease; }
   .animate-pulse, .animate-ping { animation:none !important; }
   .animate-ping { display:none !important; }
   ::-webkit-scrollbar-thumb { background:rgba(120,100,80,.30); }
@@ -110,7 +105,6 @@
   .bg-elevated\/95 { background-color:rgba(246,243,239,.97); }
   .bg-surface\/60 { background-color:rgba(255,255,255,.50); }
   .bg-black\/60 { background-color:rgba(70,55,45,.32); }
-  .shadow-2xl { --tw-shadow:0 22px 50px rgba(110,90,70,.30); box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow); }
   .border-\[\#8CAAC8\]\/10, .border-\[\#8CAAC8\]\/15, .border-\[\#8CAAC8\]\/20 { border-color:rgba(120,100,80,.14); }
 
   /* ---- colour is for TEXT only: strip every red / yellow / green tint, glow and outline ---- */
@@ -124,126 +118,115 @@
   .bg-\[\#4A5A70\] { background-color:#B9AEA4; }
   .bg-\[\#4A5A70\]\/40 { background-color:rgba(120,100,80,.16); }
 
-  /* ---- glass + neumorphic card ---- */
-  .glass-card { background:linear-gradient(145deg,rgba(255,255,255,.74),rgba(255,255,255,.36));
-    border:1px solid rgba(255,255,255,.80); border-radius:20px;
-    box-shadow: 12px 12px 26px rgba(110,90,70,.46), -10px -10px 22px rgba(255,255,255,1), inset 1px 1px 2px rgba(255,255,255,.95), inset -1px -1px 3px rgba(110,90,70,.10); }
-  .rounded-lg[class*="bg-elevated/70"] { background-color:#EAE6E1; border-color:transparent;
-    box-shadow: inset 4px 4px 9px rgba(110,90,70,.42), inset -4px -4px 9px rgba(255,255,255,1); }          /* hour/visit tiles: pressed in */
-  .rounded-xl[class*="bg-elevated/70"] { background-color:#F3F0EC; border-color:transparent;
-    box-shadow: 8px 8px 16px rgba(110,90,70,.40), -7px -7px 15px rgba(255,255,255,1); }                    /* stat chips: raised */
+  /* ===================== UNIFIED LIGHTING SYSTEM =====================
+     ONE light source, top-left (~135deg). Every raised surface casts a soft
+     shadow DOWN-RIGHT and catches a highlight UP-LEFT; every recessed surface
+     is the exact inverse. Only 3 raise levels + 1 press level exist, each with
+     proportional offset/blur, so no tile is deeper, blurrier or differently
+     lit than another.
+       raise-1  small controls (buttons, chips, avatars, toast pill)
+       raise-2  cards
+       raise-3  modals (highest, closest to the light)
+       press-1  recessed: inputs, data tiles, selected toggles, pressed buttons */
+  :root {
+    --shade:104,84,64; --lit:255,255,255;
+    --raise-0: 2px 2px 5px rgba(var(--shade),.22), -2px -2px 5px rgba(var(--lit),.95);
+    --raise-1: 3px 3px 8px rgba(var(--shade),.24), -3px -3px 8px rgba(var(--lit),.95);
+    --raise-2: 6px 6px 14px rgba(var(--shade),.26), -6px -6px 14px rgba(var(--lit),.95);
+    --raise-3: 12px 12px 26px rgba(var(--shade),.28), -8px -8px 20px rgba(var(--lit),.95);
+    --press-1: inset 3px 3px 6px rgba(var(--shade),.26), inset -3px -3px 6px rgba(var(--lit),.95);
+    --edge: inset 1px 1px 1px rgba(var(--lit),.9);
+    --surface:#F3F0EC; --recess:#EAE6E1;
+  }
+  /* neutralise every legacy glow / ad-hoc shadow utility so only the system above applies */
+  .shadow, .shadow-lg { box-shadow:var(--raise-2) !important; }
+  .shadow-2xl { box-shadow:var(--raise-3) !important; }
+  .shadow-glow-cyan, .shadow-glow-mint, .shadow-glow-amber, .shadow-glow-coral { box-shadow:none !important; }
+
+  /* ---- cards (single elevation for ALL cards, incl. ones with legacy cyan hover borders) ---- */
+  .glass-card { background:linear-gradient(145deg,rgba(255,255,255,.80),rgba(255,255,255,.40));
+    border:1px solid rgba(255,255,255,.80) !important; border-radius:20px;
+    box-shadow:var(--raise-2), var(--edge) !important; }
+  /* loading skeletons use the same silhouette so nothing jumps when data arrives */
+  .animate-pulse { background:linear-gradient(145deg,rgba(255,255,255,.80),rgba(255,255,255,.40)) !important;
+    border:1px solid rgba(255,255,255,.80) !important; border-radius:20px !important; box-shadow:var(--raise-2), var(--edge); }
+
+  /* ---- tiles ---- */
+  .rounded-xl[class*="bg-elevated/70"] { background-color:var(--surface); border-color:transparent !important; box-shadow:var(--raise-1) !important; }   /* stat chips: raised */
+  .rounded-lg[class*="bg-elevated/70"], div.rounded-lg[class*="bg-elevated/50"] { background-color:var(--recess) !important; border-color:transparent !important; box-shadow:var(--press-1) !important; }  /* data tiles / report rows: recessed */
   .text-\[8px\] { font-size:9px; } .text-\[9px\] { font-size:10px; } .text-\[10px\] { font-size:11px; } .text-\[11px\] { font-size:12px; }
 
-  /* ---- top bar + bottom nav: frosted without blur ---- */
-  header.sticky { background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(246,243,239,.92)) !important;
-    border-bottom:1px solid rgba(255,255,255,.9) !important; box-shadow:0 8px 20px rgba(150,130,110,.22); transform:translateZ(0); }
-  nav.fixed { background:linear-gradient(0deg,rgba(255,255,255,.97),rgba(246,243,239,.93)) !important;
-    border-top:1px solid rgba(255,255,255,.9) !important; box-shadow:0 -8px 20px rgba(150,130,110,.22); transform:translateZ(0); }
+  /* ---- top bar + bottom nav: same light, no blur ---- */
+  header.sticky { background:linear-gradient(180deg,#FBF9F7,#F4F1ED) !important;
+    border-bottom:1px solid rgba(255,255,255,.95) !important; box-shadow:0 5px 12px rgba(var(--shade),.18);
+    padding-top:env(safe-area-inset-top,0px); }
+  /* the nav sits at the bottom edge: light falls from above, so it gets a lit top edge, never an upward shadow */
+  nav.fixed { background:linear-gradient(180deg,#F8F6F3,#F1EEEA) !important;
+    border-top:1px solid rgba(255,255,255,.95) !important; box-shadow:0 -1px 0 rgba(var(--shade),.07); }
+  /* attendance save bar floats over the nav -> shadow falls down onto it */
+  .fixed.z-40.bg-elevated { background:linear-gradient(180deg,#FBF9F7,#F4F1ED) !important;
+    border-top:1px solid rgba(255,255,255,.95) !important; box-shadow:0 5px 12px rgba(var(--shade),.18); }
 
-  /* ---- inputs: pressed-in ---- */
+  /* ---- inputs: recessed ---- */
   input:not([type=checkbox]):not([type=radio]), textarea, select {
-    background:#EDEAE5 !important; border:1px solid rgba(255,255,255,.75) !important; border-radius:12px; color:#2B2521;
-    box-shadow:inset 3px 3px 7px rgba(150,130,110,.35), inset -3px -3px 7px rgba(255,255,255,.95); }
-  input:focus, textarea:focus, select:focus { outline:none; border-color:rgba(120,100,80,.30) !important; }
+    background:var(--recess) !important; border:1px solid rgba(255,255,255,.75) !important; border-radius:12px; color:#2B2521;
+    box-shadow:var(--press-1); }
+  input:focus, textarea:focus, select:focus { outline:none; border-color:rgba(120,100,80,.32) !important; }
 
-  /* ---- buttons: raised neutral, red text; selected = pressed in ---- */
-  button.bg-gradient-to-r.from-cyan { background-image:none; background-color:#F3F0EC; color:#C8141A;
-    box-shadow:8px 8px 16px rgba(110,90,70,.42), -7px -7px 15px rgba(255,255,255,1); }
-  button[class*="border-cyan/30"], button[class*="bg-elevated/50"] { background-color:#F3F0EC !important;
-    box-shadow:6px 6px 13px rgba(110,90,70,.36), -6px -6px 13px rgba(255,255,255,1); }
-  button[class*="bg-cyan/10"] { box-shadow:inset 3px 3px 7px rgba(150,130,110,.38), inset -3px -3px 7px rgba(255,255,255,.95); }
-  .bg-coral.text-canvas, .bg-mint.text-canvas, .bg-amber.text-canvas { background-color:#E9E5E0 !important;
-    box-shadow:inset 3px 3px 7px rgba(150,130,110,.45), inset -3px -3px 7px rgba(255,255,255,.95); }
-  .bg-coral.text-canvas { color:#B8151F; }
-  .bg-mint.text-canvas  { color:#12683A; }
-  .bg-amber.text-canvas { color:#855500; }
-  [class*="rounded-full"][class*="bg-cyan/10"] { border-color:transparent !important;
-    box-shadow:3px 3px 7px rgba(150,130,110,.30), -3px -3px 7px rgba(255,255,255,.95); }
-  button:active { box-shadow:inset 3px 3px 7px rgba(150,130,110,.40), inset -3px -3px 7px rgba(255,255,255,.9); }
+  /* ---- buttons: all raised-1; selected / pressed = press-1 ---- */
+  button.bg-gradient-to-r, button[class*="border-cyan/"], button[class*="bg-elevated/"], button[class*="border-[#8CAAC8]/20"] {
+    background-color:var(--surface) !important; background-image:none !important; border-color:transparent !important;
+    box-shadow:var(--raise-1) !important; }
+  button.bg-gradient-to-r { color:#C8141A; }
+  button[class].bg-cyan\/10 { background-color:var(--recess) !important; box-shadow:var(--press-1) !important; }   /* selected filter chip */
+  button:active:not(:disabled), button[class]:active:not(:disabled) { box-shadow:var(--press-1) !important; }
+  button:disabled { opacity:.55; }
+  /* attendance A / P / L segments: selected one is pressed in, others are flat */
+  .bg-coral.text-canvas, .bg-mint.text-canvas, .bg-amber.text-canvas { background-color:var(--recess) !important; box-shadow:var(--press-1) !important; }
+  .bg-coral.text-canvas { color:#B8151F; } .bg-mint.text-canvas { color:#12683A; } .bg-amber.text-canvas { color:#855500; }
+  .flex.rounded-lg.overflow-hidden[class*="border-"] { border-color:rgba(120,100,80,.14) !important; background:rgba(255,255,255,.35); }
+  /* avatars */
+  [class*="rounded-full"][class*="bg-cyan/10"] { border-color:transparent !important; box-shadow:var(--raise-0) !important; }
 
-  /* ---- pull-to-refresh pill (static, no animation) ---- */
-  .ptr-pill { padding:7px 16px; border-radius:999px; background:#F6F3EF; color:#C8141A;
-    font:600 10px/1 "Chakra Petch",system-ui,sans-serif; letter-spacing:.14em;
-    box-shadow:5px 5px 12px rgba(150,130,110,.35), -5px -5px 12px rgba(255,255,255,.95); }
+  /* ---- toast / pull-to-refresh pill ---- */
+  .fixed.z-\[100\] { background-color:var(--surface) !important; box-shadow:var(--raise-2) !important; border-color:transparent !important; }
+  .ptr-pill { padding:7px 16px; border-radius:999px; background:var(--surface); color:#C8141A;
+    font:600 10px/1 "Chakra Petch",system-ui,sans-serif; letter-spacing:.14em; box-shadow:var(--raise-1); }
 
-  /* ---- boot screen ---- */
-  .loader { color:#40372F; }
-  .word { color:#C8141A; }
-  .spinner { border-right-color:#8A7F76; filter:none; }
-  .spinner::after { border-right-color:#C4BAB0; }
+  /* ---- mobile polish ---- */
+  @supports (-webkit-touch-callout:none) { input, select, textarea { font-size:16px !important; } }   /* stops iOS zooming the page on focus */
+  @supports (height:100dvh) { .z-\[91\].flex-col { max-height:85dvh !important; } }
+  .app-shell { animation:shell-in .28s ease-out both; }
+  @keyframes shell-in { from { opacity:0; } to { opacity:1; } }
 
   :focus-visible { outline: 2px solid #FBCE07; outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
   }
 
-  /* Boot spinner — adapted from Uiverse.io by Chriskoziol, restyled to the
-     Tactical HUD palette (cyan/mint on canvas) and Chakra Petch type. */
-  .spinnerContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 22px;
-  }
-  .spinner {
-    width: 56px;
-    height: 56px;
-    display: grid;
-    border: 4px solid #0000;
-    border-radius: 50%;
-    border-right-color: #E8352E;
-    animation: tri-spinner 1s infinite linear;
-    filter: drop-shadow(0 0 8px rgba(232,53,46,0.22));
-  }
-  .spinner::before,
-  .spinner::after {
-    content: "";
-    grid-area: 1/1;
-    margin: 2px;
-    border: inherit;
-    border-radius: 50%;
-    animation: tri-spinner 2s infinite;
-  }
-  .spinner::after {
-    margin: 8px;
-    animation-duration: 3s;
-    border-right-color: #E8352E;
-  }
-  @keyframes tri-spinner {
-    100% { transform: rotate(1turn); }
-  }
-  .loader {
-    color: #7C93AC;
-    font-family: "Chakra Petch", sans-serif;
-    font-weight: 600;
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    box-sizing: content-box;
-    height: 22px;
-    display: flex;
-    align-items: center;
-  }
-  .words { overflow: hidden; height: 100%; }
-  .word {
-    display: block;
-    height: 100%;
-    padding-left: 8px;
-    color: #FBCE07;
-    animation: cycle-words 5s infinite;
-  }
+  /* Boot loader — Shell red (#DD1D21) spinner + cycling word. */
+  .boot-screen { min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:40px; padding:0 24px; }
+  .spinnerContainer { display:flex; flex-direction:column; align-items:center; gap:22px; }
+  .spinner { width:56px; height:56px; display:grid; border:4px solid transparent; border-radius:50%;
+    border-right-color:#DD1D21; animation:tri-spinner 1s infinite linear; will-change:transform; }
+  .spinner::before, .spinner::after { content:""; grid-area:1/1; margin:2px; border:inherit; border-radius:50%; animation:tri-spinner 2s infinite; }
+  .spinner::after { margin:8px; animation-duration:3s; border-right-color:#DD1D21; }
+  @keyframes tri-spinner { 100% { transform:rotate(1turn); } }
+  .loader { color:#40372F; font-family:"Chakra Petch",sans-serif; font-weight:600; font-size:15px; letter-spacing:.12em;
+    text-transform:uppercase; box-sizing:content-box; height:22px; display:flex; align-items:center; }
+  .words { overflow:hidden; height:100%; }
+  .word { display:block; height:100%; line-height:22px; padding-left:8px; color:#DD1D21; animation:cycle-words 6s ease-in-out infinite; }
+  /* 5 words + a repeat of the first at the end, so the loop restarts with no visible jump */
   @keyframes cycle-words {
-    10%  { transform: translateY(-105%); }
-    25%  { transform: translateY(-100%); }
-    35%  { transform: translateY(-205%); }
-    50%  { transform: translateY(-200%); }
-    60%  { transform: translateY(-305%); }
-    75%  { transform: translateY(-300%); }
-    85%  { transform: translateY(-405%); }
-    100% { transform: translateY(-400%); }
+    0%,14%  { transform:translateY(0); }
+    20%,34% { transform:translateY(-100%); }
+    40%,54% { transform:translateY(-200%); }
+    60%,74% { transform:translateY(-300%); }
+    80%,94% { transform:translateY(-400%); }
+    100%    { transform:translateY(-500%); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .spinner, .spinner::before, .spinner::after, .word { animation: none; }
+    .spinner, .spinner::before, .spinner::after, .word { animation:none; }
   }
 </style>
 
@@ -259,31 +242,10 @@
   }
 }
 </script>
-<style id="stable-shell-visual-system">
-/* Stable Shell visual system — no heavy compositing/blur layers. */
-.backdrop-blur-md, .backdrop-blur-xl {
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-}
-.shadow, .shadow-lg, .shadow-2xl, .shadow-glow-amber, .shadow-glow-coral,
-.shadow-glow-cyan, .shadow-glow-mint {
-  box-shadow: 0 6px 18px rgba(0,0,0,.22) !important;
-}
-.spinner, .loader, .loader .word, .words .word {
-  color: #E8352E !important;
-}
-.spinner {
-  border-right-color: #E8352E !important;
-  filter: drop-shadow(0 0 8px rgba(232,53,46,.22)) !important;
-}
-.spinner::after {
-  border-right-color: #E8352E !important;
-}
-</style>
 </head>
 <body class="bg-canvas text-white font-sans antialiased">
 <div id="bg-logo" aria-hidden="true"></div>
-<div id="root"></div>
+<div id="root"><div class="boot-screen" role="status" aria-label="Loading"><div class="flex items-center gap-3"><img src="icons/icon-192.png" alt="Shell" style="width:56px;height:56px;object-fit:contain"><div><h1 class="font-display font-semibold tracking-wide text-lg text-white">FIELD OPS</h1><p class="text-[10px] font-mono tracking-widest text-[#7C93AC]">ADMIN</p></div></div><div class="spinnerContainer"><div class="spinner"></div><div class="loader"><span>SYNCING</span><div class="words"><span class="word">HOURS</span><span class="word">VISITS</span><span class="word">SUMMARY</span><span class="word">ATTENDANCE</span><span class="word">BEAT PLANS</span><span class="word" aria-hidden="true">HOURS</span></div></div></div></div></div>
 
 <script type="module">
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
@@ -433,13 +395,13 @@ function Toast({ message, tone = 'mint', onDone }) {
         return () => clearTimeout(t);
     }, [onDone]);
     const toneMap = { mint: 'border-mint/40 text-mint', coral: 'border-coral/40 text-coral' };
-    return (_jsxs(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.12, ease: 'easeOut' }, className: `fixed top-4 left-1/2 -translate-x-1/2 z-[100] bg-elevated/95 backdrop-blur-xl border ${toneMap[tone]} rounded-xl px-4 py-3 shadow-lg flex items-center gap-2 text-sm font-medium`, children: [_jsx(ShieldCheck, { size: 16 }), message] }));
+    return (_jsxs(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.12, ease: 'easeOut' }, style: { top: 'calc(16px + env(safe-area-inset-top, 0px))', width: 'max-content', maxWidth: 'calc(100vw - 32px)' }, className: `fixed left-1/2 -translate-x-1/2 z-[100] bg-elevated/95 backdrop-blur-xl border ${toneMap[tone]} rounded-xl px-4 py-3 shadow-lg flex items-center gap-2 text-sm font-medium`, children: [_jsx(ShieldCheck, { size: 16 }), message] }));
 }
 /* ============================================================
    TOP COMMAND BAR
    ============================================================ */
 function TopBar({ live, lastSynced, onRefresh, refreshing, onOpenSettings }) {
-    return (_jsx("header", { className: "sticky top-0 z-40 bg-canvas border-b border-[#8CAAC8]/15", children: _jsxs("div", { className: "max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-3", children: [_jsxs("div", { className: "flex items-center gap-3 min-w-0", children: [_jsx("img", { src: "icons/icon-192.png", alt: "Shell", className: "shrink-0", style: { width: 38, height: 38, objectFit: "contain" } }), _jsxs("div", { className: "min-w-0", children: [_jsx("h1", { className: "font-display font-semibold tracking-wide text-sm text-white truncate", children: "FIELD OPS" }), _jsxs("div", { className: "flex items-center gap-1.5 mt-0.5", children: [_jsxs("span", { className: "relative flex h-2 w-2", children: [live && _jsx("span", { className: "animate-ping absolute inline-flex h-full w-full rounded-full bg-mint opacity-75" }), _jsx("span", { className: `relative inline-flex rounded-full h-2 w-2 ${live ? 'bg-mint' : 'bg-[#4A5A70]'}` })] }), _jsx("span", { className: `text-[10px] font-mono tracking-widest ${live ? 'text-mint' : 'text-[#4A5A70]'}`, children: live ? 'LIVE FEED' : 'OFFLINE' })] })] })] }), _jsxs("div", { className: "flex items-center gap-2 shrink-0", children: [_jsx("span", { className: "hidden sm:block text-[11px] font-mono tabular text-[#7C93AC]", children: lastSynced }), _jsx(motion.button, { onClick: onRefresh, whileTap: { scale: 0.97 }, className: "w-9 h-9 rounded-lg border border-[#8CAAC8]/20 bg-elevated/60 flex items-center justify-center text-cyan hover:border-cyan/40 transition-colors", "aria-label": "Refresh", children: _jsx(motion.span, { animate: { rotate: refreshing ? 360 : 0 }, transition: { duration: 0.6, ease: 'easeInOut' }, children: _jsx(RefreshCw, { size: 16 }) }) }), _jsx("button", { onClick: onOpenSettings, className: "w-9 h-9 rounded-lg border border-[#8CAAC8]/20 bg-elevated/60 flex items-center justify-center text-[#7C93AC] hover:text-cyan hover:border-cyan/40 transition-colors", "aria-label": "Settings", children: _jsx(Settings, { size: 16 }) })] })] }) }));
+    return (_jsx("header", { className: "sticky top-0 z-40 bg-canvas border-b border-[#8CAAC8]/15", children: _jsxs("div", { className: "max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-3", children: [_jsxs("div", { className: "flex items-center gap-3 min-w-0", children: [_jsx("img", { src: "icons/icon-192.png", alt: "Shell", className: "shrink-0", style: { width: 38, height: 38, objectFit: "contain" } }), _jsxs("div", { className: "min-w-0", children: [_jsx("h1", { className: "font-display font-semibold tracking-wide text-sm text-white truncate", children: "FIELD OPS" }), _jsxs("div", { className: "flex items-center gap-1.5 mt-0.5", children: [_jsxs("span", { className: "relative flex h-2 w-2", children: [live && _jsx("span", { className: "animate-ping absolute inline-flex h-full w-full rounded-full bg-mint opacity-75" }), _jsx("span", { className: `relative inline-flex rounded-full h-2 w-2 ${live ? 'bg-mint' : 'bg-[#4A5A70]'}` })] }), _jsx("span", { className: `text-[10px] font-mono tracking-widest ${live ? 'text-mint' : 'text-[#4A5A70]'}`, children: live ? 'LIVE FEED' : 'OFFLINE' })] })] })] }), _jsxs("div", { className: "flex items-center gap-2 shrink-0", children: [_jsx("span", { className: "hidden sm:block text-[11px] font-mono tabular text-[#7C93AC]", children: lastSynced }), _jsx(motion.button, { onClick: onRefresh, whileTap: { scale: 0.97 }, className: "w-9 h-9 rounded-lg border border-[#8CAAC8]/20 bg-elevated/60 flex items-center justify-center text-cyan hover:border-cyan/40 transition-colors", "aria-label": "Refresh", children: _jsx(motion.span, { animate: { rotate: refreshing ? 360 : 0 }, transition: refreshing ? { duration: 0.9, ease: 'linear', repeat: Infinity } : { duration: 0 }, children: _jsx(RefreshCw, { size: 16 }) }) }), _jsx("button", { onClick: onOpenSettings, className: "w-9 h-9 rounded-lg border border-[#8CAAC8]/20 bg-elevated/60 flex items-center justify-center text-[#7C93AC] hover:text-cyan hover:border-cyan/40 transition-colors", "aria-label": "Settings", children: _jsx(Settings, { size: 16 }) })] })] }) }));
 }
 /* ============================================================
    NAV TABS
@@ -760,7 +722,7 @@ function AttendanceScreen({ data, loading, onSave, saving, onFetchReport }) {
                 ] }),
             _jsxs("div", { className: "grid grid-cols-2 gap-2 mb-4", children: [_jsx(FilterChip, { label: `Sales Officers (${draft.sales.length})`, active: division === 'sales', onClick: () => setDivision('sales') }), _jsx(FilterChip, { label: `Marketing Officers (${draft.marketing.length})`, active: division === 'marketing', onClick: () => setDivision('marketing') })] }),
             _jsx("div", { children: _jsx(AttGroup, { title: divisionLabel, list: groupList, onSetStatus: setStatus }) }, division),
-            _jsx(AnimatePresence, { children: dirty && (_jsx(motion.div, { initial: { y: 80, opacity: 0 }, animate: { y: 0, opacity: 1 }, exit: { y: 80, opacity: 0 }, transition: { duration: 0.12, ease: 'easeOut' }, className: "fixed left-0 right-0 z-40 bg-elevated border-t border-cyan/25 px-4 py-3", style: { bottom: 'calc(60px + env(safe-area-inset-bottom, 0px))' }, children: _jsxs("div", { className: "max-w-2xl mx-auto flex items-center gap-3", children: [_jsxs("button", { onClick: reset, className: "flex items-center gap-1.5 px-3 py-2.5 rounded-lg border border-[#8CAAC8]/20 text-[#7C93AC] text-xs font-medium hover:text-white transition-colors", children: [_jsx(RotateCcw, { size: 13 }), " Reset"] }), _jsxs("button", { onClick: async () => { const ok = await onSave(groupList); if (ok) dirtyRef.current = false; }, disabled: saving, className: "flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-gradient-to-r from-cyan to-mint text-canvas text-sm font-display font-semibold tracking-wide shadow-glow-cyan disabled:opacity-60", children: [_jsx(Save, { size: 14 }), " ", saving ? 'SAVING...' : `SAVE ${divisionLabel.toUpperCase()}`] })] }) }, division)) }),
+            _jsx(AnimatePresence, { children: dirty && (_jsx(motion.div, { initial: { y: 80, opacity: 0 }, animate: { y: 0, opacity: 1 }, exit: { y: 80, opacity: 0 }, transition: { duration: 0.12, ease: 'easeOut' }, className: "fixed left-0 right-0 z-40 bg-elevated border-t border-cyan/25 px-4 py-3", style: { bottom: 'calc(60px + env(safe-area-inset-bottom, 0px))' }, children: _jsxs("div", { className: "max-w-2xl mx-auto flex items-center gap-3", children: [_jsxs("button", { onClick: reset, className: "flex items-center gap-1.5 px-3 py-2.5 rounded-lg border border-[#8CAAC8]/20 text-[#7C93AC] text-xs font-medium hover:text-white transition-colors", children: [_jsx(RotateCcw, { size: 13 }), " Reset"] }), _jsxs("button", { onClick: async () => { const ok = await onSave(groupList); if (ok) { const other = division === 'sales' ? 'marketing' : 'sales'; const orig = (other === 'sales' ? data.salesOfficers : data.marketingOfficers) || []; dirtyRef.current = draft[other].map(p => p.status).join('') !== orig.map(p => normalizeStatus(p.status)).join(''); } }, disabled: saving, className: "flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-gradient-to-r from-cyan to-mint text-canvas text-sm font-display font-semibold tracking-wide shadow-glow-cyan disabled:opacity-60", children: [_jsx(Save, { size: 14 }), " ", saving ? 'SAVING...' : `SAVE ${divisionLabel.toUpperCase()}`] })] }) }, division)) }),
             _jsx(AttendanceReportPanel, { open: reportOpen, onClose: () => setReportOpen(false), onFetchReport: onFetchReport }),
         ] }));
 }
@@ -784,7 +746,7 @@ function AttendanceReportPanel({ open, onClose, onFetchReport }) {
     const [fetching, setFetching] = useState(false);
     const [error, setError] = useState(null);
     const [shareStatus, setShareStatus] = useState({ state: 'idle' });
-    useEffect(() => { if (!open) { setRows(null); setError(null); setShareStatus({ state: 'idle' }); } }, [open]);
+    useEffect(() => { if (!open) { setRows(null); setError(null); setShareStatus({ state: 'idle' }); return; } document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = ''; }; }, [open]);
     const runReport = async () => {
         setFetching(true);
         setError(null);
@@ -813,7 +775,7 @@ function AttendanceReportPanel({ open, onClose, onFetchReport }) {
     return (_jsxs(_Fragment, { children: [
                 _jsx("div", { onClick: onClose, className: "fixed inset-0 z-[90] bg-black/60" }),
                 _jsxs("div", { className: "fixed z-[91] inset-x-4 top-1/2 -translate-y-1/2 max-w-md mx-auto bg-elevated border border-[#8CAAC8]/20 rounded-2xl shadow-2xl overflow-hidden flex flex-col", style: { maxHeight: '85vh' }, children: [
-                        _jsxs("div", { className: "px-5 py-4 border-b border-[#8CAAC8]/15 flex items-center justify-between shrink-0", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx(FileText, { size: 16, className: "text-cyan" }), _jsx("h2", { className: "font-display text-sm font-semibold tracking-wide text-white", children: "ABSENT / LEAVE REPORT" })] }), _jsx("button", { onClick: onClose, className: "text-[#7C93AC] hover:text-white w-9 h-9 flex items-center justify-center rounded-lg", "aria-label": "Close settings", children: _jsx(X, { size: 18 }) })] }),
+                        _jsxs("div", { className: "px-5 py-4 border-b border-[#8CAAC8]/15 flex items-center justify-between shrink-0", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx(FileText, { size: 16, className: "text-cyan" }), _jsx("h2", { className: "font-display text-sm font-semibold tracking-wide text-white", children: "ABSENT / LEAVE REPORT" })] }), _jsx("button", { onClick: onClose, className: "text-[#7C93AC] hover:text-white w-9 h-9 flex items-center justify-center rounded-lg", "aria-label": "Close report", children: _jsx(X, { size: 18 }) })] }),
                         _jsxs("div", { className: "px-5 py-4 space-y-3 overflow-y-auto flex-1 min-h-0", children: [
                                 _jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
                                         _jsxs("div", { children: [_jsx("label", { className: "text-[10px] font-display tracking-wider text-[#7C93AC] mb-1 block", children: "FROM" }), _jsx("input", { type: "date", value: from, max: to, onChange: e => setFrom(e.target.value), className: "w-full bg-canvas border border-[#8CAAC8]/20 rounded-lg px-2.5 py-2 text-xs font-mono text-white outline-none focus:border-cyan/40" })] }),
@@ -844,13 +806,14 @@ function SettingsModal({ open, onClose, apiUrl, onSaveUrl, onDiagnose, diagnosis
     const inputRef = useRef(null);
     useEffect(() => {
         setDraftUrl(apiUrl);
-        if (open) setTimeout(() => inputRef.current && inputRef.current.focus(), 0);
+        if (open && window.matchMedia && window.matchMedia('(pointer:fine)').matches) setTimeout(() => inputRef.current && inputRef.current.focus(), 0);
     }, [apiUrl, open]);
     useEffect(() => {
         if (!open) return;
+        document.body.style.overflow = 'hidden';
         const onKeyDown = (e) => { if (e.key === 'Escape') onClose(); };
         window.addEventListener('keydown', onKeyDown);
-        return () => window.removeEventListener('keydown', onKeyDown);
+        return () => { window.removeEventListener('keydown', onKeyDown); document.body.style.overflow = ''; };
     }, [open, onClose]);
     if (!open) return null;
     return (_jsxs(_Fragment, { children: [_jsx("div", { onClick: onClose, className: "fixed inset-0 z-[90] bg-black/60" }), _jsxs("div", { role: "dialog", "aria-modal": "true", "aria-labelledby": "settings-title", className: "fixed z-[91] inset-x-4 top-1/2 -translate-y-1/2 max-w-md mx-auto bg-elevated border border-[#8CAAC8]/20 rounded-2xl shadow-2xl overflow-hidden", children: [_jsxs("div", { className: "px-5 py-4 border-b border-[#8CAAC8]/15 flex items-center justify-between", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx(TerminalSquare, { size: 16, className: "text-cyan" }), _jsx("h2", { id: "settings-title", className: "font-display text-sm font-semibold tracking-wide text-white", children: "CONNECTION SETTINGS" })] }), _jsx("button", { onClick: onClose, className: "text-[#7C93AC] hover:text-white", children: _jsx(X, { size: 18 }) })] }), _jsxs("div", { className: "px-5 py-4 space-y-4", children: [_jsxs("div", { children: [_jsx("label", { className: "text-[10px] font-display tracking-wider text-[#7C93AC] mb-1.5 block", children: "GOOGLE APPS SCRIPT WEB APP URL" }), _jsx("input", { ref: inputRef, value: draftUrl, onChange: e => setDraftUrl(e.target.value), placeholder: "https://script.google.com/macros/s/.../exec", className: "w-full bg-canvas border border-[#8CAAC8]/20 rounded-lg px-3 py-2.5 text-xs font-mono text-white placeholder-[#4A5A70] focus:border-cyan/40 outline-none" })] }), _jsxs("button", { onClick: () => onDiagnose(draftUrl), disabled: diagnosing || !draftUrl, className: "w-full flex items-center justify-center gap-2 rounded-lg border border-cyan/30 text-cyan text-xs font-display font-semibold tracking-wide py-2.5 hover:bg-cyan/10 transition-colors disabled:opacity-50", children: [_jsx(Wifi, { size: 14 }), " ", diagnosing ? 'DIAGNOSING...' : 'DIAGNOSE CONNECTION'] }), diagnosis && (_jsx("div", { className: `text-xs rounded-lg px-3 py-2 font-mono ${diagnosis.ok ? 'text-mint bg-mint/10 border border-mint/25' : 'text-coral bg-coral/10 border border-coral/25'}`, children: diagnosis.message }))] }), _jsxs("div", { className: "px-5 py-4 border-t border-[#8CAAC8]/15 flex gap-2", children: [_jsx("button", { onClick: onClose, className: "flex-1 py-2.5 rounded-lg border border-[#8CAAC8]/20 text-[#7C93AC] text-xs font-medium", children: "Cancel" }), _jsx("button", { onClick: () => { onSaveUrl(draftUrl); onClose(); }, className: "flex-1 py-2.5 rounded-lg bg-gradient-to-r from-cyan to-mint text-canvas text-xs font-display font-semibold tracking-wide shadow-glow-cyan", children: "Save & Close" })] })] })] }));
@@ -869,7 +832,7 @@ function EmptyState({ text }) {
    pulls Hours / Visits / Summary / Attendance / Beat Plans.
    ============================================================ */
 function BootLoader() {
-    return (_jsxs("div", { className: "min-h-screen bg-hud-radial flex flex-col items-center justify-center gap-10 px-6", children: [_jsxs("div", { className: "flex items-center gap-3", children: [_jsx("img", { src: "icons/icon-192.png", alt: "Shell", style: { width: 56, height: 56, objectFit: "contain" } }), _jsxs("div", { children: [_jsx("h1", { className: "font-display font-semibold tracking-wide text-lg text-white", children: "FIELD OPS" }), _jsx("p", { className: "text-[10px] font-mono tracking-widest text-[#7C93AC]", children: "ADMIN" })] })] }), _jsxs("div", { className: "spinnerContainer", children: [_jsx("div", { className: "spinner" }), _jsxs("div", { className: "loader", children: [_jsx("span", { children: "SYNCING" }), _jsxs("div", { className: "words", children: [_jsx("span", { className: "word", children: "HOURS" }), _jsx("span", { className: "word", children: "VISITS" }), _jsx("span", { className: "word", children: "SUMMARY" }), _jsx("span", { className: "word", children: "ATTENDANCE" }), _jsx("span", { className: "word", children: "BEAT PLANS" })] })] })] })] }));
+    return (_jsxs("div", { className: "boot-screen", role: "status", "aria-label": "Loading", children: [_jsxs("div", { className: "flex items-center gap-3", children: [_jsx("img", { src: "icons/icon-192.png", alt: "Shell", style: { width: 56, height: 56, objectFit: "contain" } }), _jsxs("div", { children: [_jsx("h1", { className: "font-display font-semibold tracking-wide text-lg text-white", children: "FIELD OPS" }), _jsx("p", { className: "text-[10px] font-mono tracking-widest text-[#7C93AC]", children: "ADMIN" })] })] }), _jsxs("div", { className: "spinnerContainer", children: [_jsx("div", { className: "spinner" }), _jsxs("div", { className: "loader", children: [_jsx("span", { children: "SYNCING" }), _jsxs("div", { className: "words", children: [_jsx("span", { className: "word", children: "HOURS" }), _jsx("span", { className: "word", children: "VISITS" }), _jsx("span", { className: "word", children: "SUMMARY" }), _jsx("span", { className: "word", children: "ATTENDANCE" }), _jsx("span", { className: "word", children: "BEAT PLANS" }), _jsx("span", { className: "word", "aria-hidden": "true", children: "HOURS" })] })] })] })] }));
 }
 /* ============================================================
    APP ROOT
@@ -892,8 +855,15 @@ function App() {
     const [saving, setSaving] = useState(false);
     const [online, setOnline] = useState(() => navigator.onLine);
     const [dir, setDir] = useState(0); // tab transition direction: 1 = forward, -1 = backward
-    const [booted, setBooted] = useState(true); // render the app shell immediately; data loads into skeletons without a boot-screen flash
+    const [booted, setBooted] = useState(false); // boot screen stays until the first sync finishes (identical markup to the static one in index.html, so no flash)
     const hasBootedRef = useRef(false);
+    const finishBoot = useCallback(() => {
+        if (hasBootedRef.current) return;
+        hasBootedRef.current = true;
+        const wait = Math.max(0, 900 - performance.now()); // keep the loader up at least ~0.9s after page start
+        setTimeout(() => setBooted(true), wait);
+    }, []);
+    useEffect(() => { const t = setTimeout(finishBoot, 20000); return () => clearTimeout(t); }, [finishBoot]); // never get stuck on the loader
     const live = !!apiUrl && online;
     const clearToast = useCallback(() => setToast(null), []);
     useEffect(() => {
@@ -911,7 +881,7 @@ function App() {
         if (!navigator.onLine) {
             setToast({ message: 'You are offline. Showing the last loaded data.', tone: 'coral' });
             setLoading({ hours: false, visits: false, summary: false, attendance: false, beatplan: false });
-            if (!hasBootedRef.current) { hasBootedRef.current = true; setBooted(true); }
+            finishBoot();
             return;
         } // ignore overlapping refreshes
         inFlightRef.current = true;
@@ -956,12 +926,9 @@ function App() {
             setLoading(prev => (prev.hours || prev.visits || prev.summary || prev.attendance || prev.beatplan)
                 ? { hours: false, visits: false, summary: false, attendance: false, beatplan: false } : prev);
             setRefreshing(false);
-            if (!hasBootedRef.current) {
-                hasBootedRef.current = true;
-                setBooted(true);
-            }
+            finishBoot();
         }
-    }, [callApi]);
+    }, [callApi, finishBoot]);
     useEffect(() => { loadAll(); }, [loadAll]);
     const handleSaveAttendance = async (records) => {
         if (saving || !records || records.length === 0) return;
@@ -1147,7 +1114,7 @@ function App() {
         else if (dx > 0 && idx > 0)
             changeTab(TAB_KEYS[idx - 1]); // swipe right -> previous tab
     }, [changeTab]);
-    return (!booted ? (_jsx(BootLoader, {}, "boot")) : (_jsxs("div", { className: "min-h-screen bg-hud-radial", children: [(ptr !== 'idle' || ptrBusy) && _jsx("div", { style: { position: 'fixed', top: 'calc(64px + env(safe-area-inset-top, 0px))', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 60, pointerEvents: 'none' }, children: _jsx("div", { className: "ptr-pill", children: ptrBusy ? 'REFRESHING…' : ptr === 'ready' ? 'RELEASE TO REFRESH' : 'PULL DOWN TO REFRESH' }) }), _jsx(TopBar, { live: live, lastSynced: lastSynced, onRefresh: loadAll, refreshing: refreshing, onOpenSettings: () => setSettingsOpen(true) }), _jsx(motion.main, { style: { paddingBottom: 'calc(72px + env(safe-area-inset-bottom, 0px))', touchAction: 'pan-y' }, onPanStart: handlePanStart, onPan: handlePan, onPanEnd: handlePanEnd, children: _jsx("div", { style: { position: 'relative' }, children: _jsxs("div", { style: { width: '100%' }, children: [tab === 'hours' && _jsx(WorkingHoursScreen, { rows: mergedHoursRows, loading: loading.hours, attendanceMap: attendanceMap }), tab === 'visits' && _jsx(VisitsScreen, { rows: visitsData, loading: loading.visits }), tab === 'summary' && _jsx(SummaryScreen, { sections: summaryData, loading: loading.summary }), tab === 'attendance' && _jsx(AttendanceScreen, { data: attData, loading: loading.attendance, onSave: handleSaveAttendance, saving: saving, onFetchReport: handleFetchAttendanceReport }), tab === 'beatplan' && _jsx(BeatPlanScreen, { rows: beatPlanData, loading: loading.beatplan })] }) }), _jsx(BottomNav, { active: tab, onChange: changeTab }), _jsx(SettingsModal, { open: settingsOpen, onClose: () => setSettingsOpen(false), apiUrl: apiUrl, onSaveUrl: updateApiUrl, onDiagnose: handleDiagnose, diagnosis: diagnosis, diagnosing: diagnosing }), _jsx(AnimatePresence, { initial: false, children: toast && _jsx(Toast, { message: toast.message, tone: toast.tone, onDone: clearToast }, toast.message) })] }, "app")));
+    return (!booted ? (_jsx(BootLoader, {}, "boot")) : (_jsxs("div", { className: "min-h-screen app-shell", children: [(ptr !== 'idle' || ptrBusy) && _jsx("div", { style: { position: 'fixed', top: 'calc(64px + env(safe-area-inset-top, 0px))', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 60, pointerEvents: 'none' }, children: _jsx("div", { className: "ptr-pill", children: ptrBusy ? 'REFRESHING…' : ptr === 'ready' ? 'RELEASE TO REFRESH' : 'PULL DOWN TO REFRESH' }) }), _jsx(TopBar, { live: live, lastSynced: lastSynced, onRefresh: loadAll, refreshing: refreshing, onOpenSettings: () => setSettingsOpen(true) }), _jsx(motion.main, { style: { paddingBottom: 'calc(72px + env(safe-area-inset-bottom, 0px))', touchAction: 'pan-y' }, onPanStart: handlePanStart, onPan: handlePan, onPanEnd: handlePanEnd, children: _jsx("div", { style: { position: 'relative' }, children: _jsxs("div", { style: { width: '100%' }, children: [tab === 'hours' && _jsx(WorkingHoursScreen, { rows: mergedHoursRows, loading: loading.hours, attendanceMap: attendanceMap }), tab === 'visits' && _jsx(VisitsScreen, { rows: visitsData, loading: loading.visits }), tab === 'summary' && _jsx(SummaryScreen, { sections: summaryData, loading: loading.summary }), tab === 'attendance' && _jsx(AttendanceScreen, { data: attData, loading: loading.attendance, onSave: handleSaveAttendance, saving: saving, onFetchReport: handleFetchAttendanceReport }), tab === 'beatplan' && _jsx(BeatPlanScreen, { rows: beatPlanData, loading: loading.beatplan })] }) }), _jsx(BottomNav, { active: tab, onChange: changeTab }), _jsx(SettingsModal, { open: settingsOpen, onClose: () => setSettingsOpen(false), apiUrl: apiUrl, onSaveUrl: updateApiUrl, onDiagnose: handleDiagnose, diagnosis: diagnosis, diagnosing: diagnosing }), _jsx(AnimatePresence, { initial: false, children: toast && _jsx(Toast, { message: toast.message, tone: toast.tone, onDone: clearToast }, toast.message) })] }, "app")));
 }
 createRoot(document.getElementById('root')).render(_jsx(App, {}));
 </script>
@@ -1155,7 +1122,7 @@ createRoot(document.getElementById('root')).render(_jsx(App, {}));
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=10')
+      navigator.serviceWorker.register('sw.js?v=11')
         .catch(err => console.warn('SW registration failed:', err));
     });
   }
