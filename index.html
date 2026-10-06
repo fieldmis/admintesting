@@ -4,12 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>FIELD OPS — ADMIN</title>
-<meta name="theme-color" content="#F1EEEA" />
+<meta name="theme-color" content="#0F0909" />
 
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FOS Admin">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,6 +29,30 @@
 .rounded-t-2xl{border-top-left-radius:1rem;border-top-right-radius:1rem}
 @keyframes spin-report{to{transform:rotate(360deg)}}
 .animate-spin{animation:spin-report .8s linear infinite}
+</style>
+
+<style>
+  /* Accessibility and mobile interaction refinements */
+  :root { color-scheme: dark; }
+  html { background: #0F0909; }
+  body { background: #0F0909; }
+  button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid #FBCE07;
+    outline-offset: 3px;
+  }
+  [aria-disabled="true"], button:disabled { cursor: not-allowed; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  @media (min-width: 768px) {
+    body { background: #0F0909; }
+  }
 </style>
 
 <style>
