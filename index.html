@@ -259,27 +259,6 @@
   }
 }
 </script>
-<style id="stable-shell-visual-system">
-/* Stable Shell visual system — no heavy compositing/blur layers. */
-.backdrop-blur-md, .backdrop-blur-xl {
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-}
-.shadow, .shadow-lg, .shadow-2xl, .shadow-glow-amber, .shadow-glow-coral,
-.shadow-glow-cyan, .shadow-glow-mint {
-  box-shadow: 0 6px 18px rgba(0,0,0,.22) !important;
-}
-.spinner, .loader, .loader .word, .words .word {
-  color: #E8352E !important;
-}
-.spinner {
-  border-right-color: #E8352E !important;
-  filter: drop-shadow(0 0 8px rgba(232,53,46,.22)) !important;
-}
-.spinner::after {
-  border-right-color: #E8352E !important;
-}
-</style>
 </head>
 <body class="bg-canvas text-white font-sans antialiased">
 <div id="bg-logo" aria-hidden="true"></div>
@@ -1155,10 +1134,17 @@ createRoot(document.getElementById('root')).render(_jsx(App, {}));
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=10')
+      navigator.serviceWorker.register('sw.js')
         .catch(err => console.warn('SW registration failed:', err));
     });
   }
 </script>
 </body>
 </html>
+  /* Stable Shell visual system — no heavy compositing/blur layers. */
+  .backdrop-blur-md, .backdrop-blur-xl { -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+  .shadow, .shadow-lg, .shadow-2xl, .shadow-glow-amber, .shadow-glow-coral, .shadow-glow-cyan, .shadow-glow-mint { box-shadow:0 6px 18px rgba(0,0,0,.22) !important; }
+  .spinner, .loader, .loader .word, .words .word { color:#E8352E !important; }
+  .spinner { border-right-color:#E8352E !important; filter:drop-shadow(0 0 8px rgba(232,53,46,.22)) !important; }
+  .spinner::after { border-right-color:#E8352E !important; }
+
