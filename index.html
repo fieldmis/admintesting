@@ -181,9 +181,11 @@
   button[class].bg-cyan\/10 { background-color:var(--recess) !important; box-shadow:var(--press-1) !important; }   /* selected filter chip */
   button:active:not(:disabled), button[class]:active:not(:disabled) { box-shadow:var(--press-1) !important; }
   button:disabled { opacity:.55; }
-  /* attendance A / P / L segments: selected one is pressed in, others are flat */
-  .bg-coral.text-canvas, .bg-mint.text-canvas, .bg-amber.text-canvas { background-color:var(--recess) !important; box-shadow:var(--press-1) !important; }
-  .bg-coral.text-canvas { color:#B8151F; } .bg-mint.text-canvas { color:#12683A; } .bg-amber.text-canvas { color:#855500; }
+  /* attendance A / P / L segments: selected one is filled with its status colour (not just the font) */
+  .bg-coral.text-canvas, .bg-mint.text-canvas, .bg-amber.text-canvas { box-shadow:none !important; color:#fff !important; }
+  .bg-coral.text-canvas { background-color:#E5352B !important; }
+  .bg-mint.text-canvas { background-color:#16A34A !important; }
+  .bg-amber.text-canvas { background-color:#E58A00 !important; }
   .flex.rounded-lg.overflow-hidden[class*="border-"] { border-color:rgba(120,100,80,.14) !important; background:rgba(255,255,255,.35); }
   /* avatars */
   [class*="rounded-full"][class*="bg-cyan/10"] { border-color:transparent !important; box-shadow:var(--raise-0) !important; }
@@ -1114,7 +1116,7 @@ function App() {
         else if (dx > 0 && idx > 0)
             changeTab(TAB_KEYS[idx - 1]); // swipe right -> previous tab
     }, [changeTab]);
-    return (!booted ? (_jsx(BootLoader, {}, "boot")) : (_jsxs("div", { className: "min-h-screen app-shell", children: [(ptr !== 'idle' || ptrBusy) && _jsx("div", { style: { position: 'fixed', top: 'calc(64px + env(safe-area-inset-top, 0px))', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 60, pointerEvents: 'none' }, children: _jsx("div", { className: "ptr-pill", children: ptrBusy ? 'REFRESHING…' : ptr === 'ready' ? 'RELEASE TO REFRESH' : 'PULL DOWN TO REFRESH' }) }), _jsx(TopBar, { live: live, lastSynced: lastSynced, onRefresh: loadAll, refreshing: refreshing, onOpenSettings: () => setSettingsOpen(true) }), _jsx(motion.main, { style: { paddingBottom: 'calc(72px + env(safe-area-inset-bottom, 0px))', touchAction: 'pan-y' }, onPanStart: handlePanStart, onPan: handlePan, onPanEnd: handlePanEnd, children: _jsx("div", { style: { position: 'relative' }, children: _jsxs("div", { style: { width: '100%' }, children: [tab === 'hours' && _jsx(WorkingHoursScreen, { rows: mergedHoursRows, loading: loading.hours, attendanceMap: attendanceMap }), tab === 'visits' && _jsx(VisitsScreen, { rows: visitsData, loading: loading.visits }), tab === 'summary' && _jsx(SummaryScreen, { sections: summaryData, loading: loading.summary }), tab === 'attendance' && _jsx(AttendanceScreen, { data: attData, loading: loading.attendance, onSave: handleSaveAttendance, saving: saving, onFetchReport: handleFetchAttendanceReport }), tab === 'beatplan' && _jsx(BeatPlanScreen, { rows: beatPlanData, loading: loading.beatplan })] }) }), _jsx(BottomNav, { active: tab, onChange: changeTab }), _jsx(SettingsModal, { open: settingsOpen, onClose: () => setSettingsOpen(false), apiUrl: apiUrl, onSaveUrl: updateApiUrl, onDiagnose: handleDiagnose, diagnosis: diagnosis, diagnosing: diagnosing }), _jsx(AnimatePresence, { initial: false, children: toast && _jsx(Toast, { message: toast.message, tone: toast.tone, onDone: clearToast }, toast.message) })] }, "app")));
+    return (!booted ? (_jsx(BootLoader, {}, "boot")) : (_jsxs("div", { className: "min-h-screen app-shell", children: [(ptr !== 'idle' || ptrBusy) && _jsx("div", { style: { position: 'fixed', top: 'calc(64px + env(safe-area-inset-top, 0px))', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 60, pointerEvents: 'none' }, children: _jsx("div", { className: "ptr-pill", children: ptrBusy ? 'REFRESHING…' : ptr === 'ready' ? 'RELEASE TO REFRESH' : 'PULL DOWN TO REFRESH' }) }), _jsx(TopBar, { live: live, lastSynced: lastSynced, onRefresh: loadAll, refreshing: refreshing, onOpenSettings: () => setSettingsOpen(true) }), _jsx(motion.main, { style: { paddingBottom: 'calc(72px + env(safe-area-inset-bottom, 0px))', touchAction: 'pan-y' }, onPanStart: handlePanStart, onPan: handlePan, onPanEnd: handlePanEnd, children: _jsx("div", { style: { position: 'relative' }, children: _jsxs("div", { style: { width: '100%' }, children: [tab === 'hours' && _jsx(WorkingHoursScreen, { rows: mergedHoursRows, loading: loading.hours, attendanceMap: attendanceMap }), tab === 'visits' && _jsx(VisitsScreen, { rows: visitsData, loading: loading.visits }), tab === 'summary' && _jsx(SummaryScreen, { sections: summaryData, loading: loading.summary }), tab === 'attendance' && _jsx(AttendanceScreen, { data: attData, loading: loading.attendance, onSave: handleSaveAttendance, saving: saving, onFetchReport: handleFetchAttendanceReport }), tab === 'beatplan' && _jsx(BeatPlanScreen, { rows: beatPlanData, loading: loading.beatplan })] }) }) }), _jsx(BottomNav, { active: tab, onChange: changeTab }), _jsx(SettingsModal, { open: settingsOpen, onClose: () => setSettingsOpen(false), apiUrl: apiUrl, onSaveUrl: updateApiUrl, onDiagnose: handleDiagnose, diagnosis: diagnosis, diagnosing: diagnosing }), _jsx(AnimatePresence, { initial: false, children: toast && _jsx(Toast, { message: toast.message, tone: toast.tone, onDone: clearToast }, toast.message) })] }, "app")));
 }
 createRoot(document.getElementById('root')).render(_jsx(App, {}));
 </script>
@@ -1122,7 +1124,7 @@ createRoot(document.getElementById('root')).render(_jsx(App, {}));
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=11')
+      navigator.serviceWorker.register('sw.js?v=12')
         .catch(err => console.warn('SW registration failed:', err));
     });
   }
