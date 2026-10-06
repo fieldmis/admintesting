@@ -887,6 +887,7 @@ function App() {
         if (inFlightRef.current) return;
         if (!navigator.onLine) {
             setToast({ message: 'You are offline. Showing the last loaded data.', tone: 'coral' });
+            setLoading({ hours: false, visits: false, summary: false, attendance: false, beatplan: false });
             if (!hasBootedRef.current) { hasBootedRef.current = true; setBooted(true); }
             return;
         } // ignore overlapping refreshes
