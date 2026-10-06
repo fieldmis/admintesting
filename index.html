@@ -687,12 +687,15 @@ function AttendanceScreen({ data, loading, onSave, saving, onFetchReport }) {
     const [draft, setDraft] = useState(null);
     const [division, setDivision] = useState('sales'); // 'sales' | 'marketing' — only two divisions, confirmed independently
     const [reportOpen, setReportOpen] = useState(false);
+    const dirtyRef = useRef(false);
     useEffect(() => {
-        if (data) {
+        if (data && (!draft || !dirtyRef.current)) {
             const normalize = (list) => (list || []).map(p => ({ ...p, status: normalizeStatus(p.status) }));
             setDraft({ sales: normalize(data.salesOfficers), marketing: normalize(data.marketingOfficers) });
+            dirtyRef.current = false;
         }
     }, [data]);
+
     const groupList = draft ? draft[division] : [];
     const originalList = data ? (division === 'sales' ? data.salesOfficers : data.marketingOfficers) : [];
     const dirty = useMemo(() => {
@@ -712,9 +715,14 @@ function AttendanceScreen({ data, loading, onSave, saving, onFetchReport }) {
         };
     }, [groupList]);
     const setStatus = (idx, status) => {
+        dirtyRef.current = true;
         setDraft(prev => ({ ...prev, [division]: prev[division].map((p, i) => i === idx ? { ...p, status } : p) }));
     };
-    const reset = () => data && setDraft(prev => ({ ...prev, [division]: (division === 'sales' ? data.salesOfficers : data.marketingOfficers || []).map(p => ({ ...p, status: normalizeStatus(p.status) })) }));
+    const reset = () => {
+        if (!data) return;
+        dirtyRef.current = false;
+        setDraft(prev => ({ ...prev, [division]: (division === 'sales' ? data.salesOfficers : data.marketingOfficers || []).map(p => ({ ...p, status: normalizeStatus(p.status) })) }));
+    };
     if (loading || !draft)
         return _jsx("div", { className: "px-4 py-4 max-w-2xl mx-auto", children: _jsx(SkeletonList, { rows: 4 }) });
     const divisionLabel = division === 'sales' ? 'Sales Officers' : 'Marketing Officers';
@@ -783,7 +791,7 @@ function AttendanceReportPanel({ open, onClose, onFetchReport }) {
     return (_jsx(AnimatePresence, { children: open && (_jsxs(_Fragment, { children: [
                 _jsx(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: onClose, className: "fixed inset-0 z-[90] bg-black/60 backdrop-blur-md" }),
                 _jsxs(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.1 }, className: "fixed z-[91] inset-x-4 top-1/2 -translate-y-1/2 max-w-md mx-auto bg-elevated border border-[#8CAAC8]/20 rounded-2xl shadow-2xl overflow-hidden flex flex-col", style: { maxHeight: '85vh' }, children: [
-                        _jsxs("div", { className: "px-5 py-4 border-b border-[#8CAAC8]/15 flex items-center justify-between shrink-0", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx(FileText, { size: 16, className: "text-cyan" }), _jsx("h2", { className: "font-display text-sm font-semibold tracking-wide text-white", children: "ABSENT / LEAVE REPORT" })] }), _jsx("button", { onClick: onClose, className: "text-[#7C93AC] hover:text-white", children: _jsx(X, { size: 18 }) })] }),
+                        _jsxs("div", { className: "px-5 py-4 border-b border-[#8CAAC8]/15 flex items-center justify-between shrink-0", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx(FileText, { size: 16, className: "text-cyan" }), _jsx("h2", { className: "font-display text-sm font-semibold tracking-wide text-white", children: "ABSENT / LEAVE REPORT" })] }), _jsx("button", { onClick: onClose, className: "text-[#7C93AC] hover:text-white w-9 h-9 flex items-center justify-center rounded-lg", "aria-label": "Close settings", children: _jsx(X, { size: 18 }) })] }),
                         _jsxs("div", { className: "px-5 py-4 space-y-3 overflow-y-auto flex-1 min-h-0", children: [
                                 _jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
                                         _jsxs("div", { children: [_jsx("label", { className: "text-[10px] font-display tracking-wider text-[#7C93AC] mb-1 block", children: "FROM" }), _jsx("input", { type: "date", value: from, max: to, onChange: e => setFrom(e.target.value), className: "w-full bg-canvas border border-[#8CAAC8]/20 rounded-lg px-2.5 py-2 text-xs font-mono text-white outline-none focus:border-cyan/40" })] }),
@@ -811,8 +819,18 @@ function BeatPlanScreen({ rows, loading }) {
    ============================================================ */
 function SettingsModal({ open, onClose, apiUrl, onSaveUrl, onDiagnose, diagnosis, diagnosing }) {
     const [draftUrl, setDraftUrl] = useState(apiUrl);
-    useEffect(() => { setDraftUrl(apiUrl); }, [apiUrl, open]);
-    return (_jsx(AnimatePresence, { children: open && (_jsxs(_Fragment, { children: [_jsx(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: onClose, className: "fixed inset-0 z-[90] bg-black/60 backdrop-blur-md" }), _jsxs(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.12, ease: 'easeOut' }, className: "fixed z-[91] inset-x-4 top-1/2 -translate-y-1/2 max-w-md mx-auto bg-elevated border border-[#8CAAC8]/20 rounded-2xl shadow-2xl overflow-hidden", children: [_jsxs("div", { className: "px-5 py-4 border-b border-[#8CAAC8]/15 flex items-center justify-between", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx(TerminalSquare, { size: 16, className: "text-cyan" }), _jsx("h2", { className: "font-display text-sm font-semibold tracking-wide text-white", children: "CONNECTION SETTINGS" })] }), _jsx("button", { onClick: onClose, className: "text-[#7C93AC] hover:text-white", children: _jsx(X, { size: 18 }) })] }), _jsxs("div", { className: "px-5 py-4 space-y-4", children: [_jsxs("div", { children: [_jsx("label", { className: "text-[10px] font-display tracking-wider text-[#7C93AC] mb-1.5 block", children: "GOOGLE APPS SCRIPT WEB APP URL" }), _jsx("input", { value: draftUrl, onChange: e => setDraftUrl(e.target.value), placeholder: "https://script.google.com/macros/s/.../exec", className: "w-full bg-canvas border border-[#8CAAC8]/20 rounded-lg px-3 py-2.5 text-xs font-mono text-white placeholder-[#4A5A70] focus:border-cyan/40 outline-none" })] }), _jsxs("button", { onClick: () => onDiagnose(draftUrl), disabled: diagnosing || !draftUrl, className: "w-full flex items-center justify-center gap-2 rounded-lg border border-cyan/30 text-cyan text-xs font-display font-semibold tracking-wide py-2.5 hover:bg-cyan/10 transition-colors disabled:opacity-50", children: [_jsx(Wifi, { size: 14 }), " ", diagnosing ? 'DIAGNOSING...' : 'DIAGNOSE CONNECTION'] }), diagnosis && (_jsx("div", { className: `text-xs rounded-lg px-3 py-2 font-mono ${diagnosis.ok ? 'text-mint bg-mint/10 border border-mint/25' : 'text-coral bg-coral/10 border border-coral/25'}`, children: diagnosis.message }))] }), _jsxs("div", { className: "px-5 py-4 border-t border-[#8CAAC8]/15 flex gap-2", children: [_jsx("button", { onClick: onClose, className: "flex-1 py-2.5 rounded-lg border border-[#8CAAC8]/20 text-[#7C93AC] text-xs font-medium", children: "Cancel" }), _jsx("button", { onClick: () => { onSaveUrl(draftUrl); onClose(); }, className: "flex-1 py-2.5 rounded-lg bg-gradient-to-r from-cyan to-mint text-canvas text-xs font-display font-semibold tracking-wide shadow-glow-cyan", children: "Save & Close" })] })] })] })) }));
+    const inputRef = useRef(null);
+    useEffect(() => {
+        setDraftUrl(apiUrl);
+        if (open) setTimeout(() => inputRef.current && inputRef.current.focus(), 0);
+    }, [apiUrl, open]);
+    useEffect(() => {
+        if (!open) return;
+        const onKeyDown = (e) => { if (e.key === 'Escape') onClose(); };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [open, onClose]);
+    return (_jsx(AnimatePresence, { children: open && (_jsxs(_Fragment, { children: [_jsx(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: onClose, className: "fixed inset-0 z-[90] bg-black/60 backdrop-blur-md" }), _jsxs(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.12, ease: 'easeOut' }, role: "dialog", "aria-modal": "true", "aria-labelledby": "settings-title", className: "fixed z-[91] inset-x-4 top-1/2 -translate-y-1/2 max-w-md mx-auto bg-elevated border border-[#8CAAC8]/20 rounded-2xl shadow-2xl overflow-hidden", children: [_jsxs("div", { className: "px-5 py-4 border-b border-[#8CAAC8]/15 flex items-center justify-between", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx(TerminalSquare, { size: 16, className: "text-cyan" }), _jsx("h2", { id: "settings-title", className: "font-display text-sm font-semibold tracking-wide text-white", children: "CONNECTION SETTINGS" })] }), _jsx("button", { onClick: onClose, className: "text-[#7C93AC] hover:text-white", children: _jsx(X, { size: 18 }) })] }), _jsxs("div", { className: "px-5 py-4 space-y-4", children: [_jsxs("div", { children: [_jsx("label", { className: "text-[10px] font-display tracking-wider text-[#7C93AC] mb-1.5 block", children: "GOOGLE APPS SCRIPT WEB APP URL" }), _jsx("input", { ref: inputRef, value: draftUrl, onChange: e => setDraftUrl(e.target.value), placeholder: "https://script.google.com/macros/s/.../exec", className: "w-full bg-canvas border border-[#8CAAC8]/20 rounded-lg px-3 py-2.5 text-xs font-mono text-white placeholder-[#4A5A70] focus:border-cyan/40 outline-none" })] }), _jsxs("button", { onClick: () => onDiagnose(draftUrl), disabled: diagnosing || !draftUrl, className: "w-full flex items-center justify-center gap-2 rounded-lg border border-cyan/30 text-cyan text-xs font-display font-semibold tracking-wide py-2.5 hover:bg-cyan/10 transition-colors disabled:opacity-50", children: [_jsx(Wifi, { size: 14 }), " ", diagnosing ? 'DIAGNOSING...' : 'DIAGNOSE CONNECTION'] }), diagnosis && (_jsx("div", { className: `text-xs rounded-lg px-3 py-2 font-mono ${diagnosis.ok ? 'text-mint bg-mint/10 border border-mint/25' : 'text-coral bg-coral/10 border border-coral/25'}`, children: diagnosis.message }))] }), _jsxs("div", { className: "px-5 py-4 border-t border-[#8CAAC8]/15 flex gap-2", children: [_jsx("button", { onClick: onClose, className: "flex-1 py-2.5 rounded-lg border border-[#8CAAC8]/20 text-[#7C93AC] text-xs font-medium", children: "Cancel" }), _jsx("button", { onClick: () => { onSaveUrl(draftUrl); onClose(); }, className: "flex-1 py-2.5 rounded-lg bg-gradient-to-r from-cyan to-mint text-canvas text-xs font-display font-semibold tracking-wide shadow-glow-cyan", children: "Save & Close" })] })] })] })) }));
 }
 /* ============================================================
    SHARED: SKELETONS / EMPTY STATE
