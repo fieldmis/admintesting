@@ -956,13 +956,16 @@ function App() {
                     return { ...prev, salesOfficers: applyUpdates(prev.salesOfficers), marketingOfficers: applyUpdates(prev.marketingOfficers) };
                 });
                 setToast({ message: 'Attendance saved successfully.', tone: 'mint' });
+                return true;
             }
             else {
                 setToast({ message: res.message || 'Save failed.', tone: 'coral' });
+                return false;
             }
         }
         catch (e) {
             setToast({ message: e && e.name === 'AbortError' ? 'Save timed out — please try again.' : 'Save failed — network error.', tone: 'coral' });
+            return false;
         }
         finally {
             setSaving(false);
