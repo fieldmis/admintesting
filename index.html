@@ -4,12 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>FIELD OPS — ADMIN</title>
-<meta name="theme-color" content="#F1EEEA" />
+<meta name="theme-color" content="#0F0909" />
 
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FOS Admin">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,6 +29,33 @@
 .rounded-t-2xl{border-top-left-radius:1rem;border-top-right-radius:1rem}
 @keyframes spin-report{to{transform:rotate(360deg)}}
 .animate-spin{animation:spin-report .8s linear infinite}
+</style>
+
+<style>
+  /* Accessibility and mobile interaction refinements */
+  :root { color-scheme: dark; }
+  html { background: #0F0909; }
+  body { background: #0F0909; min-height: 100dvh; overscroll-behavior-y: contain; }
+  button { touch-action: manipulation; }
+  .glass-card { will-change: transform; transform: translateZ(0); }
+  @media (hover:hover) and (pointer:fine) { .glass-card { transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease; } .glass-card:hover { transform: translateY(-1px); } }
+  button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid #FBCE07;
+    outline-offset: 3px;
+  }
+  [aria-disabled="true"], button:disabled { cursor: not-allowed; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  @media (min-width: 768px) {
+    body { background: #0F0909; }
+  }
 </style>
 
 <style>
@@ -330,13 +357,22 @@ function useApi() {
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action, payload: payload || {} }),
                     signal: controller.signal,
+                    cache: 'no-store',
                 });
                 const text = await res.text();
-                try { return JSON.parse(text); }
+                if (!res.ok) {
+                    return { ok: false, message: `Backend request failed (HTTP ${res.status}). Check the Apps Script deployment and permissions.`, httpStatus: res.status };
+                }
+                try {
+                    const json = JSON.parse(text);
+                    return json && typeof json === 'object'
+                        ? json
+                        : { ok: false, message: 'Backend returned an unexpected response.' };
+                }
                 catch (parseErr) {
-                    // Apps Script returns an HTML page (not JSON) when the deployment
-                    // is outdated, not shared with the right audience, or the script crashed.
-                    return { ok: false, message: 'Backend sent an invalid response (HTTP ' + res.status + '). Re-deploy the Apps Script web app as a NEW VERSION and check it is shared with "Anyone".' };
+                    // Apps Script returns HTML when the deployment is outdated,
+                    // inaccessible, or the script crashed before returning JSON.
+                    return { ok: false, message: 'Backend returned an invalid response (HTTP ' + res.status + '). Re-deploy the Apps Script web app as a NEW VERSION and check it is shared with "Anyone".' };
                 }
             } finally {
                 clearTimeout(timeoutId);
@@ -399,7 +435,7 @@ function BottomNav({ active, onChange }) {
     return (_jsx("nav", { className: "fixed bottom-0 left-0 right-0 z-30 bg-canvas/90 backdrop-blur-xl border-t border-[#8CAAC8]/15", style: { paddingBottom: 'env(safe-area-inset-bottom, 0px)' }, children: _jsx("div", { className: "max-w-2xl mx-auto px-2 flex items-stretch", children: TABS.map(tab => {
                 const Icon = tab.icon;
                 const isActive = active === tab.key;
-                return (_jsxs("button", { onClick: () => onChange(tab.key), className: "relative flex-1 flex flex-col items-center justify-center gap-1 py-2.5", children: [false, _jsx(Icon, { size: 19, className: isActive ? 'text-cyan' : 'text-[#4A5A70]', strokeWidth: isActive ? 2.4 : 2 }), _jsx("span", { className: `text-[9px] font-display font-semibold tracking-wider ${isActive ? 'text-cyan' : 'text-[#4A5A70]'}`, children: tab.label })] }, tab.key));
+                return (_jsxs("button", { onClick: () => onChange(tab.key), className: "relative flex-1 flex flex-col items-center justify-center gap-1 py-2.5 min-h-[56px]", "aria-current": isActive ? "page" : undefined, "aria-label": tab.label, children: [_jsx(Icon, { size: 19, className: isActive ? 'text-cyan' : 'text-[#4A5A70]', strokeWidth: isActive ? 2.4 : 2 }), _jsx("span", { className: `text-[9px] font-display font-semibold tracking-wider ${isActive ? 'text-cyan' : 'text-[#4A5A70]'}`, children: tab.label })] }, tab.key));
             }) }) }));
 }
 /* ============================================================
@@ -651,12 +687,15 @@ function AttendanceScreen({ data, loading, onSave, saving, onFetchReport }) {
     const [draft, setDraft] = useState(null);
     const [division, setDivision] = useState('sales'); // 'sales' | 'marketing' — only two divisions, confirmed independently
     const [reportOpen, setReportOpen] = useState(false);
+    const dirtyRef = useRef(false);
     useEffect(() => {
-        if (data) {
+        if (data && (!draft || !dirtyRef.current)) {
             const normalize = (list) => (list || []).map(p => ({ ...p, status: normalizeStatus(p.status) }));
             setDraft({ sales: normalize(data.salesOfficers), marketing: normalize(data.marketingOfficers) });
+            dirtyRef.current = false;
         }
     }, [data]);
+
     const groupList = draft ? draft[division] : [];
     const originalList = data ? (division === 'sales' ? data.salesOfficers : data.marketingOfficers) : [];
     const dirty = useMemo(() => {
@@ -676,9 +715,14 @@ function AttendanceScreen({ data, loading, onSave, saving, onFetchReport }) {
         };
     }, [groupList]);
     const setStatus = (idx, status) => {
+        dirtyRef.current = true;
         setDraft(prev => ({ ...prev, [division]: prev[division].map((p, i) => i === idx ? { ...p, status } : p) }));
     };
-    const reset = () => data && setDraft(prev => ({ ...prev, [division]: (division === 'sales' ? data.salesOfficers : data.marketingOfficers || []).map(p => ({ ...p, status: normalizeStatus(p.status) })) }));
+    const reset = () => {
+        if (!data) return;
+        dirtyRef.current = false;
+        setDraft(prev => ({ ...prev, [division]: (division === 'sales' ? data.salesOfficers : data.marketingOfficers || []).map(p => ({ ...p, status: normalizeStatus(p.status) })) }));
+    };
     if (loading || !draft)
         return _jsx("div", { className: "px-4 py-4 max-w-2xl mx-auto", children: _jsx(SkeletonList, { rows: 4 }) });
     const divisionLabel = division === 'sales' ? 'Sales Officers' : 'Marketing Officers';
@@ -695,7 +739,7 @@ function AttendanceScreen({ data, loading, onSave, saving, onFetchReport }) {
                 ] }),
             _jsxs("div", { className: "grid grid-cols-2 gap-2 mb-4", children: [_jsx(FilterChip, { label: `Sales Officers (${draft.sales.length})`, active: division === 'sales', onClick: () => setDivision('sales') }), _jsx(FilterChip, { label: `Marketing Officers (${draft.marketing.length})`, active: division === 'marketing', onClick: () => setDivision('marketing') })] }),
             _jsx("div", { children: _jsx(AttGroup, { title: divisionLabel, list: groupList, onSetStatus: setStatus }) }, division),
-            _jsx(AnimatePresence, { children: dirty && (_jsx(motion.div, { initial: { y: 80, opacity: 0 }, animate: { y: 0, opacity: 1 }, exit: { y: 80, opacity: 0 }, transition: { duration: 0.12, ease: 'easeOut' }, className: "fixed left-0 right-0 z-40 bg-elevated/95 backdrop-blur-xl border-t border-cyan/25 px-4 py-3", style: { bottom: 'calc(60px + env(safe-area-inset-bottom, 0px))' }, children: _jsxs("div", { className: "max-w-2xl mx-auto flex items-center gap-3", children: [_jsxs("button", { onClick: reset, className: "flex items-center gap-1.5 px-3 py-2.5 rounded-lg border border-[#8CAAC8]/20 text-[#7C93AC] text-xs font-medium hover:text-white transition-colors", children: [_jsx(RotateCcw, { size: 13 }), " Reset"] }), _jsxs("button", { onClick: () => onSave(groupList), disabled: saving, className: "flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-gradient-to-r from-cyan to-mint text-canvas text-sm font-display font-semibold tracking-wide shadow-glow-cyan disabled:opacity-60", children: [_jsx(Save, { size: 14 }), " ", saving ? 'SAVING...' : `SAVE ${divisionLabel.toUpperCase()}`] })] }) }, division)) }),
+            _jsx(AnimatePresence, { children: dirty && (_jsx(motion.div, { initial: { y: 80, opacity: 0 }, animate: { y: 0, opacity: 1 }, exit: { y: 80, opacity: 0 }, transition: { duration: 0.12, ease: 'easeOut' }, className: "fixed left-0 right-0 z-40 bg-elevated/95 backdrop-blur-xl border-t border-cyan/25 px-4 py-3", style: { bottom: 'calc(60px + env(safe-area-inset-bottom, 0px))' }, children: _jsxs("div", { className: "max-w-2xl mx-auto flex items-center gap-3", children: [_jsxs("button", { onClick: reset, className: "flex items-center gap-1.5 px-3 py-2.5 rounded-lg border border-[#8CAAC8]/20 text-[#7C93AC] text-xs font-medium hover:text-white transition-colors", children: [_jsx(RotateCcw, { size: 13 }), " Reset"] }), _jsxs("button", { onClick: async () => { const ok = await onSave(groupList); if (ok) dirtyRef.current = false; }, disabled: saving, className: "flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-gradient-to-r from-cyan to-mint text-canvas text-sm font-display font-semibold tracking-wide shadow-glow-cyan disabled:opacity-60", children: [_jsx(Save, { size: 14 }), " ", saving ? 'SAVING...' : `SAVE ${divisionLabel.toUpperCase()}`] })] }) }, division)) }),
             _jsx(AttendanceReportPanel, { open: reportOpen, onClose: () => setReportOpen(false), onFetchReport: onFetchReport }),
         ] }));
 }
@@ -747,7 +791,7 @@ function AttendanceReportPanel({ open, onClose, onFetchReport }) {
     return (_jsx(AnimatePresence, { children: open && (_jsxs(_Fragment, { children: [
                 _jsx(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: onClose, className: "fixed inset-0 z-[90] bg-black/60 backdrop-blur-md" }),
                 _jsxs(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.1 }, className: "fixed z-[91] inset-x-4 top-1/2 -translate-y-1/2 max-w-md mx-auto bg-elevated border border-[#8CAAC8]/20 rounded-2xl shadow-2xl overflow-hidden flex flex-col", style: { maxHeight: '85vh' }, children: [
-                        _jsxs("div", { className: "px-5 py-4 border-b border-[#8CAAC8]/15 flex items-center justify-between shrink-0", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx(FileText, { size: 16, className: "text-cyan" }), _jsx("h2", { className: "font-display text-sm font-semibold tracking-wide text-white", children: "ABSENT / LEAVE REPORT" })] }), _jsx("button", { onClick: onClose, className: "text-[#7C93AC] hover:text-white", children: _jsx(X, { size: 18 }) })] }),
+                        _jsxs("div", { className: "px-5 py-4 border-b border-[#8CAAC8]/15 flex items-center justify-between shrink-0", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx(FileText, { size: 16, className: "text-cyan" }), _jsx("h2", { className: "font-display text-sm font-semibold tracking-wide text-white", children: "ABSENT / LEAVE REPORT" })] }), _jsx("button", { onClick: onClose, className: "text-[#7C93AC] hover:text-white w-9 h-9 flex items-center justify-center rounded-lg", "aria-label": "Close settings", children: _jsx(X, { size: 18 }) })] }),
                         _jsxs("div", { className: "px-5 py-4 space-y-3 overflow-y-auto flex-1 min-h-0", children: [
                                 _jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
                                         _jsxs("div", { children: [_jsx("label", { className: "text-[10px] font-display tracking-wider text-[#7C93AC] mb-1 block", children: "FROM" }), _jsx("input", { type: "date", value: from, max: to, onChange: e => setFrom(e.target.value), className: "w-full bg-canvas border border-[#8CAAC8]/20 rounded-lg px-2.5 py-2 text-xs font-mono text-white outline-none focus:border-cyan/40" })] }),
@@ -775,8 +819,18 @@ function BeatPlanScreen({ rows, loading }) {
    ============================================================ */
 function SettingsModal({ open, onClose, apiUrl, onSaveUrl, onDiagnose, diagnosis, diagnosing }) {
     const [draftUrl, setDraftUrl] = useState(apiUrl);
-    useEffect(() => { setDraftUrl(apiUrl); }, [apiUrl, open]);
-    return (_jsx(AnimatePresence, { children: open && (_jsxs(_Fragment, { children: [_jsx(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: onClose, className: "fixed inset-0 z-[90] bg-black/60 backdrop-blur-md" }), _jsxs(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.12, ease: 'easeOut' }, className: "fixed z-[91] inset-x-4 top-1/2 -translate-y-1/2 max-w-md mx-auto bg-elevated border border-[#8CAAC8]/20 rounded-2xl shadow-2xl overflow-hidden", children: [_jsxs("div", { className: "px-5 py-4 border-b border-[#8CAAC8]/15 flex items-center justify-between", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx(TerminalSquare, { size: 16, className: "text-cyan" }), _jsx("h2", { className: "font-display text-sm font-semibold tracking-wide text-white", children: "CONNECTION SETTINGS" })] }), _jsx("button", { onClick: onClose, className: "text-[#7C93AC] hover:text-white", children: _jsx(X, { size: 18 }) })] }), _jsxs("div", { className: "px-5 py-4 space-y-4", children: [_jsxs("div", { children: [_jsx("label", { className: "text-[10px] font-display tracking-wider text-[#7C93AC] mb-1.5 block", children: "GOOGLE APPS SCRIPT WEB APP URL" }), _jsx("input", { value: draftUrl, onChange: e => setDraftUrl(e.target.value), placeholder: "https://script.google.com/macros/s/.../exec", className: "w-full bg-canvas border border-[#8CAAC8]/20 rounded-lg px-3 py-2.5 text-xs font-mono text-white placeholder-[#4A5A70] focus:border-cyan/40 outline-none" })] }), _jsxs("button", { onClick: () => onDiagnose(draftUrl), disabled: diagnosing || !draftUrl, className: "w-full flex items-center justify-center gap-2 rounded-lg border border-cyan/30 text-cyan text-xs font-display font-semibold tracking-wide py-2.5 hover:bg-cyan/10 transition-colors disabled:opacity-50", children: [_jsx(Wifi, { size: 14 }), " ", diagnosing ? 'DIAGNOSING...' : 'DIAGNOSE CONNECTION'] }), diagnosis && (_jsx("div", { className: `text-xs rounded-lg px-3 py-2 font-mono ${diagnosis.ok ? 'text-mint bg-mint/10 border border-mint/25' : 'text-coral bg-coral/10 border border-coral/25'}`, children: diagnosis.message }))] }), _jsxs("div", { className: "px-5 py-4 border-t border-[#8CAAC8]/15 flex gap-2", children: [_jsx("button", { onClick: onClose, className: "flex-1 py-2.5 rounded-lg border border-[#8CAAC8]/20 text-[#7C93AC] text-xs font-medium", children: "Cancel" }), _jsx("button", { onClick: () => { onSaveUrl(draftUrl); onClose(); }, className: "flex-1 py-2.5 rounded-lg bg-gradient-to-r from-cyan to-mint text-canvas text-xs font-display font-semibold tracking-wide shadow-glow-cyan", children: "Save & Close" })] })] })] })) }));
+    const inputRef = useRef(null);
+    useEffect(() => {
+        setDraftUrl(apiUrl);
+        if (open) setTimeout(() => inputRef.current && inputRef.current.focus(), 0);
+    }, [apiUrl, open]);
+    useEffect(() => {
+        if (!open) return;
+        const onKeyDown = (e) => { if (e.key === 'Escape') onClose(); };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [open, onClose]);
+    return (_jsx(AnimatePresence, { children: open && (_jsxs(_Fragment, { children: [_jsx(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: onClose, className: "fixed inset-0 z-[90] bg-black/60 backdrop-blur-md" }), _jsxs(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.12, ease: 'easeOut' }, role: "dialog", "aria-modal": "true", "aria-labelledby": "settings-title", className: "fixed z-[91] inset-x-4 top-1/2 -translate-y-1/2 max-w-md mx-auto bg-elevated border border-[#8CAAC8]/20 rounded-2xl shadow-2xl overflow-hidden", children: [_jsxs("div", { className: "px-5 py-4 border-b border-[#8CAAC8]/15 flex items-center justify-between", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx(TerminalSquare, { size: 16, className: "text-cyan" }), _jsx("h2", { id: "settings-title", className: "font-display text-sm font-semibold tracking-wide text-white", children: "CONNECTION SETTINGS" })] }), _jsx("button", { onClick: onClose, className: "text-[#7C93AC] hover:text-white", children: _jsx(X, { size: 18 }) })] }), _jsxs("div", { className: "px-5 py-4 space-y-4", children: [_jsxs("div", { children: [_jsx("label", { className: "text-[10px] font-display tracking-wider text-[#7C93AC] mb-1.5 block", children: "GOOGLE APPS SCRIPT WEB APP URL" }), _jsx("input", { ref: inputRef, value: draftUrl, onChange: e => setDraftUrl(e.target.value), placeholder: "https://script.google.com/macros/s/.../exec", className: "w-full bg-canvas border border-[#8CAAC8]/20 rounded-lg px-3 py-2.5 text-xs font-mono text-white placeholder-[#4A5A70] focus:border-cyan/40 outline-none" })] }), _jsxs("button", { onClick: () => onDiagnose(draftUrl), disabled: diagnosing || !draftUrl, className: "w-full flex items-center justify-center gap-2 rounded-lg border border-cyan/30 text-cyan text-xs font-display font-semibold tracking-wide py-2.5 hover:bg-cyan/10 transition-colors disabled:opacity-50", children: [_jsx(Wifi, { size: 14 }), " ", diagnosing ? 'DIAGNOSING...' : 'DIAGNOSE CONNECTION'] }), diagnosis && (_jsx("div", { className: `text-xs rounded-lg px-3 py-2 font-mono ${diagnosis.ok ? 'text-mint bg-mint/10 border border-mint/25' : 'text-coral bg-coral/10 border border-coral/25'}`, children: diagnosis.message }))] }), _jsxs("div", { className: "px-5 py-4 border-t border-[#8CAAC8]/15 flex gap-2", children: [_jsx("button", { onClick: onClose, className: "flex-1 py-2.5 rounded-lg border border-[#8CAAC8]/20 text-[#7C93AC] text-xs font-medium", children: "Cancel" }), _jsx("button", { onClick: () => { onSaveUrl(draftUrl); onClose(); }, className: "flex-1 py-2.5 rounded-lg bg-gradient-to-r from-cyan to-mint text-canvas text-xs font-display font-semibold tracking-wide shadow-glow-cyan", children: "Save & Close" })] })] })] })) }));
 }
 /* ============================================================
    SHARED: SKELETONS / EMPTY STATE
@@ -813,16 +867,30 @@ function App() {
     const [beatPlanData, setBeatPlanData] = useState([]);
     const [loading, setLoading] = useState({ hours: true, visits: true, summary: true, attendance: true, beatplan: true });
     const [saving, setSaving] = useState(false);
+    const [online, setOnline] = useState(() => navigator.onLine);
     const [dir, setDir] = useState(0); // tab transition direction: 1 = forward, -1 = backward
     const [booted, setBooted] = useState(false); // becomes true after the first successful/failed sync
     const hasBootedRef = useRef(false);
-    const live = !!apiUrl;
+    const live = !!apiUrl && online;
     const clearToast = useCallback(() => setToast(null), []);
+    useEffect(() => {
+        const onOnline = () => setOnline(true);
+        const onOffline = () => setOnline(false);
+        window.addEventListener('online', onOnline);
+        window.addEventListener('offline', onOffline);
+        return () => { window.removeEventListener('online', onOnline); window.removeEventListener('offline', onOffline); };
+    }, []);
     const [ptr, setPtr] = useState('idle'); // pull-to-refresh state: idle | pull | ready
     const [ptrBusy, setPtrBusy] = useState(false);
     const inFlightRef = useRef(false);
     const loadAll = useCallback(async () => {
-        if (inFlightRef.current) return; // ignore overlapping refreshes
+        if (inFlightRef.current) return;
+        if (!navigator.onLine) {
+            setToast({ message: 'You are offline. Showing the last loaded data.', tone: 'coral' });
+            setLoading({ hours: false, visits: false, summary: false, attendance: false, beatplan: false });
+            if (!hasBootedRef.current) { hasBootedRef.current = true; setBooted(true); }
+            return;
+        } // ignore overlapping refreshes
         inFlightRef.current = true;
         setRefreshing(true);
         // Skeletons only show on the very first load (loading starts as true).
@@ -853,13 +921,18 @@ function App() {
             }
         }
         catch (e) {
-            setToast({ message: 'Sync failed — check connection settings.', tone: 'coral' });
+            const message = e && e.name === 'AbortError'
+                ? 'Sync timed out. The server may be busy — try again in a moment.'
+                : !navigator.onLine
+                    ? 'You are offline. Showing the last loaded data.'
+                    : 'Sync failed — check connection settings.';
+            setToast({ message, tone: 'coral' });
         }
         finally {
             inFlightRef.current = false;
             setLoading(prev => (prev.hours || prev.visits || prev.summary || prev.attendance || prev.beatplan)
                 ? { hours: false, visits: false, summary: false, attendance: false, beatplan: false } : prev);
-            setTimeout(() => setRefreshing(false), 600);
+            setRefreshing(false);
             if (!hasBootedRef.current) {
                 hasBootedRef.current = true;
                 setBooted(true);
@@ -868,6 +941,7 @@ function App() {
     }, [callApi]);
     useEffect(() => { loadAll(); }, [loadAll]);
     const handleSaveAttendance = async (records) => {
+        if (saving || !records || records.length === 0) return;
         setSaving(true);
         try {
             const res = await callApi('submitAdminAttendance', { records });
@@ -883,13 +957,16 @@ function App() {
                     return { ...prev, salesOfficers: applyUpdates(prev.salesOfficers), marketingOfficers: applyUpdates(prev.marketingOfficers) };
                 });
                 setToast({ message: 'Attendance saved successfully.', tone: 'mint' });
+                return true;
             }
             else {
                 setToast({ message: res.message || 'Save failed.', tone: 'coral' });
+                return false;
             }
         }
         catch (e) {
-            setToast({ message: 'Save failed — network error.', tone: 'coral' });
+            setToast({ message: e && e.name === 'AbortError' ? 'Save timed out — please try again.' : 'Save failed — network error.', tone: 'coral' });
+            return false;
         }
         finally {
             setSaving(false);
